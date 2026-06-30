@@ -1,5 +1,5 @@
-import { Response } from "@/types";
-import { apiClient } from "@/lib/axios";
+import { Response } from '@/types';
+import { apiClient } from '@/lib/axios';
 
 export interface LoginPayload {
   email: string;
@@ -37,60 +37,70 @@ export interface RegisterData {
 export const authService = {
   login: async (payload: LoginPayload): Promise<Response<LoginData>> => {
     try {
-      const response = await apiClient.post("/auth/login", payload);
+      const response = await apiClient.post('/auth/login', payload);
       return {
         data: response.data,
         isError: false,
         code: 200,
-        errorMessage: "",
+        errorMessage: '',
       };
     } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      const err = error as {
+        response?: { status?: number; data?: { message?: string } };
+      };
       return {
         data: null as never,
         isError: true,
         code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? "Internal Server Error",
+        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
       };
     }
   },
 
-  register: async (payload: RegisterPayload): Promise<Response<RegisterData>> => {
+  register: async (
+    payload: RegisterPayload,
+  ): Promise<Response<RegisterData>> => {
     try {
-      const response = await apiClient.post("/auth/register", payload);
+      const response = await apiClient.post('/auth/register', payload);
       return {
         data: response.data,
         isError: false,
         code: 201,
-        errorMessage: "",
+        errorMessage: '',
       };
     } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      const err = error as {
+        response?: { status?: number; data?: { message?: string } };
+      };
       return {
         data: null as never,
         isError: true,
         code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? "Internal Server Error",
+        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
       };
     }
   },
 
-  forgotPassword: async (payload: ForgotPasswordPayload): Promise<Response<{ message: string }>> => {
+  forgotPassword: async (
+    payload: ForgotPasswordPayload,
+  ): Promise<Response<{ message: string }>> => {
     try {
-      const response = await apiClient.post("/auth/forgot-password", payload);
+      const response = await apiClient.post('/auth/forgot-password', payload);
       return {
         data: response.data,
         isError: false,
         code: 200,
-        errorMessage: "",
+        errorMessage: '',
       };
     } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      const err = error as {
+        response?: { status?: number; data?: { message?: string } };
+      };
       return {
         data: null as never,
         isError: true,
         code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? "Internal Server Error",
+        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
       };
     }
   },

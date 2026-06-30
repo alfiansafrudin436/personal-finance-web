@@ -1,5 +1,5 @@
 {
- "style": "base-nova",
+  "style": "base-nova",
   "rsc": true,
   "tailwind": {
     "config": "",

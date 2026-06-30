@@ -41,7 +41,7 @@ const sidebarItems = [
   },
 ];
 
- const Sidebar = () => {
+const Sidebar = () => {
   return (
     <Sdb>
       <SidebarHeader>
@@ -80,6 +80,6 @@ const sidebarItems = [
       </SidebarFooter>
     </Sdb>
   );
-}
+};
 
 export default Sidebar;

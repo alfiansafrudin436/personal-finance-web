@@ -13,15 +13,15 @@ Next.js 16 App Router personal finance app. Follow Clean Architecture with stric
 
 ## Path Aliases
 
-| Alias | Path |
-|-------|------|
-| `@/api/*` | `src/api/*` |
-| `@/ui/*` | `src/components/ui/*` |
-| `@/components/*` | `src/components/*` |
-| `@/form/*` | `src/components/form/*` |
-| `@/hooks/*` | `src/hooks/*` |
-| `@/types/*` | `src/types/*` |
-| `@/lib/*` | `src/lib/*` |
+| Alias            | Path                    |
+| ---------------- | ----------------------- |
+| `@/api/*`        | `src/api/*`             |
+| `@/ui/*`         | `src/components/ui/*`   |
+| `@/components/*` | `src/components/*`      |
+| `@/form/*`       | `src/components/form/*` |
+| `@/hooks/*`      | `src/hooks/*`           |
+| `@/types/*`      | `src/types/*`           |
+| `@/lib/*`        | `src/lib/*`             |
 
 ## Form Implementation
 

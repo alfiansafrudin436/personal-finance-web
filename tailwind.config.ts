@@ -1,12 +1,12 @@
-import type { Config } from "tailwindcss"
+import type { Config } from 'tailwindcss';
 
 export default {
-  darkMode: ["class", "media"],
+  darkMode: ['class', 'media'],
   content: [
-    "./src/app/**/*.{ts,tsx}",
-    "./src/components/**/*.{ts,tsx}",
-    "./src/hooks/**/*.{ts,tsx}",
+    './src/app/**/*.{ts,tsx}',
+    './src/components/**/*.{ts,tsx}',
+    './src/hooks/**/*.{ts,tsx}',
   ],
   theme: {},
   plugins: [],
-} satisfies Config
+} satisfies Config;

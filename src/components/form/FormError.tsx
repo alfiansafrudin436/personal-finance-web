@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 export interface FormErrorProps {
   message?: string;
@@ -8,9 +8,7 @@ export interface FormErrorProps {
 const FormError = ({ message, className }: FormErrorProps) => {
   if (!message) return null;
 
-  return (
-    <p className={cn("text-sm text-red-600", className)}>{message}</p>
-  );
+  return <p className={cn('text-sm text-red-600', className)}>{message}</p>;
 };
 
 export { FormError };

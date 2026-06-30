@@ -5,15 +5,15 @@
 
 ## Project Context
 
-| Item | Value |
-|------|-------|
-| Stack | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Radix UI |
-| Form Validation | React Hook Form + Yup |
-| Public routes | `(public)/login`, `(public)/register`, `(public)/forgot-password` |
-| Private routes | `(private)/dashboard`, `(private)/transactions`, `(private)/categories`, `(private)/setting` |
-| Global hooks | `src/hooks/` → import via `@/hooks/*` |
-| UI components | `src/components/ui/` → import via `@/ui/*` or `@/components/ui/*` |
-| Form components | `src/components/form/` → import via `@/form/*` |
+| Item            | Value                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| Stack           | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Radix UI                      |
+| Form Validation | React Hook Form + Yup                                                                        |
+| Public routes   | `(public)/login`, `(public)/register`, `(public)/forgot-password`                            |
+| Private routes  | `(private)/dashboard`, `(private)/transactions`, `(private)/categories`, `(private)/setting` |
+| Global hooks    | `src/hooks/` → import via `@/hooks/*`                                                        |
+| UI components   | `src/components/ui/` → import via `@/ui/*` or `@/components/ui/*`                            |
+| Form components | `src/components/form/` → import via `@/form/*`                                               |
 
 ---
 
@@ -75,16 +75,16 @@ src/
 
 Cross-directory imports MUST use path aliases. Never use `../../` for cross-directory imports.
 
-| Alias | Points to |
-|-------|-----------|
-| `@/api/*` | `src/api/*` |
-| `@/components/*` | `src/components/*` |
-| `@/ui/*` | `src/components/ui/*` (shortcut) |
-| `@/lib/*` | `src/lib/*` |
-| `@/store/*` | `src/store/*` |
-| `@/types/*` | `src/types/*` |
-| `@/hooks/*` | `src/hooks/*` |
-| `@/helpers/*` | `src/utils/helpers/*` |
+| Alias            | Points to                        |
+| ---------------- | -------------------------------- |
+| `@/api/*`        | `src/api/*`                      |
+| `@/components/*` | `src/components/*`               |
+| `@/ui/*`         | `src/components/ui/*` (shortcut) |
+| `@/lib/*`        | `src/lib/*`                      |
+| `@/store/*`      | `src/store/*`                    |
+| `@/types/*`      | `src/types/*`                    |
+| `@/hooks/*`      | `src/hooks/*`                    |
+| `@/helpers/*`    | `src/utils/helpers/*`            |
 
 ### Import hierarchy
 
@@ -124,8 +124,8 @@ export type Response<T> = {
 - Always use try-catch and return a structured error object on failure
 
 ```typescript
-import { Response } from "@/types";
-import { apiClient } from "@/lib/axios";
+import { Response } from '@/types';
+import { apiClient } from '@/lib/axios';
 
 export interface LoginPayload {
   email: string;
@@ -139,20 +139,22 @@ export interface LoginData {
 export const authService = {
   login: async (payload: LoginPayload): Promise<Response<LoginData>> => {
     try {
-      const response = await apiClient.post("/auth/login", payload);
+      const response = await apiClient.post('/auth/login', payload);
       return {
         data: response.data,
         isError: false,
         code: 200,
-        errorMessage: "",
+        errorMessage: '',
       };
     } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      const err = error as {
+        response?: { status?: number; data?: { message?: string } };
+      };
       return {
         data: null as never,
         isError: true,
         code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? "Internal Server Error",
+        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
       };
     }
   },
