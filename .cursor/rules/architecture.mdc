@@ -1,0 +1,40 @@
+---
+description: Directory structure and path alias conventions
+alwaysApply: true
+---
+
+# Architecture
+
+## Directory Structure
+
+```text
+src/
+├── app/(public)/          # login, register, forgot-password
+├── app/(private)/         # dashboard, transactions, categories, setting
+├── api/                   # REST service layer
+├── components/[name]/     # index.tsx + hooks.ts
+├── components/ui/         # Shadcn atomic UI
+├── hooks/                 # Global hooks only
+├── lib/                   # axios, utils
+├── types/                 # Response<T>, shared types
+└── utils/helpers/         # Pure utility functions
+```
+
+## Path Aliases
+
+Cross-directory imports MUST use `@/*` aliases. Never use `../../`.
+
+| Alias | Target |
+|-------|--------|
+| `@/api/*` | `src/api/*` |
+| `@/components/*` | `src/components/*` |
+| `@/ui/*` | `src/components/ui/*` |
+| `@/hooks/*` | `src/hooks/*` |
+| `@/types/*` | `src/types/*` |
+| `@/lib/*` | `src/lib/*` |
+| `@/store/*` | `src/store/*` |
+| `@/helpers/*` | `src/utils/helpers/*` |
+
+Same-directory imports use relative paths (e.g. `./hooks`).
+
+Full reference: `docs/coding-standards.md`

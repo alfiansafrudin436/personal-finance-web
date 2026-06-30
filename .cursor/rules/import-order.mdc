@@ -1,0 +1,16 @@
+---
+description: Import grouping and ordering conventions
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Import Order
+
+Group imports at the top with a blank line between groups:
+
+1. React & Next.js (`react`, `next/link`, `next/navigation`)
+2. Third-party (`axios`, `@tabler/icons-react`, etc.)
+3. Path aliases (`@/api/*`, `@/ui/*`, `@/components/*`, `@/hooks/*`, `@/lib/*`, `@/types/*`)
+4. Same directory (`./hooks`, `./types`)
+
+Never use `../../` for cross-directory imports — use `@/*` aliases.

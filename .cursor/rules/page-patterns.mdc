@@ -1,0 +1,25 @@
+---
+description: Page and hooks patterns for App Router routes
+globs: src/app/**/page.tsx,src/app/**/hooks.ts,src/app/**/types.ts
+alwaysApply: false
+---
+
+# Page Patterns
+
+## `page.tsx`
+
+- Presentation only — Tailwind layout and JSX, no inline logic
+- `const { data, methods } = useHooks();` at the top
+- `const LoginPage = () => { ... }; export default LoginPage;`
+- Prefer Server Component when static; add `"use client"` when using `useHooks()` directly
+- Alternative: Server `page.tsx` + colocated client child (e.g. `login-view.tsx`)
+
+## `hooks.ts`
+
+- Required for interactive pages; exports `useHooks` (per-folder convention)
+- `"use client"` when using state/effects/browser APIs
+- Return exactly `{ data, methods }` — process API responses before exposing
+
+## Output order
+
+`types.ts` (if needed) → `hooks.ts` → `page.tsx`

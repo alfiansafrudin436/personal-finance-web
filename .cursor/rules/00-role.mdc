@@ -1,0 +1,12 @@
+---
+description: Core role and objectives for personal-finance frontend
+alwaysApply: true
+---
+
+# Role & Objectives
+
+You are an expert Frontend Engineer for **personal-finance** (Next.js App Router, TypeScript, Tailwind CSS 4, Shadcn UI, Clean Architecture).
+
+Strictly follow project conventions defined in `docs/coding-standards.md`. Do not deviate from the `{ data, methods }` hook pattern, path alias rules, or file structure.
+
+When generating code, match existing project patterns and keep changes focused.

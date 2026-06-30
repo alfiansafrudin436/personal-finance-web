@@ -1,0 +1,44 @@
+---
+description: REST API service layer and Response type conventions
+globs: src/api/**,src/types/**
+alwaysApply: false
+---
+
+# API Layer
+
+## Global Response Type (`src/types/index.ts`)
+
+```typescript
+export type Response<T> = {
+  data: T;
+  isError: boolean;
+  code: number;
+  errorMessage: string;
+};
+```
+
+## Rules
+
+- All network requests live in `src/api/[service].ts`
+- Return type: `Promise<Response<DataType>>`
+- Always try-catch; return structured error on failure
+- Export payload/response interfaces alongside the service
+
+```typescript
+export const authService = {
+  login: async (payload: LoginPayload): Promise<Response<LoginData>> => {
+    try {
+      const response = await apiClient.post("/auth/login", payload);
+      return { data: response.data, isError: false, code: 200, errorMessage: "" };
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      return {
+        data: null as never,
+        isError: true,
+        code: err.response?.status ?? 500,
+        errorMessage: err.response?.data?.message ?? "Internal Server Error",
+      };
+    }
+  },
+};
+```

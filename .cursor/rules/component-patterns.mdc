@@ -1,0 +1,24 @@
+---
+description: Global component structure with hooks separation
+globs: src/components/**/*
+alwaysApply: false
+---
+
+# Component Patterns
+
+Structure: `src/components/[component-name]/`
+
+- **`index.tsx`:** types at top, UI layout, `const` arrow function, default export
+- **`hooks.ts`:** state and logic, returns `{ data, methods }`
+
+```typescript
+const Sidebar = () => {
+  const { data, methods } = useHooks();
+  // JSX only — no useState/useEffect here
+};
+export default Sidebar;
+```
+
+- `"use client"` on both files when using React client features
+- UI atoms stay in `src/components/ui/` — import via `@/ui/*`
+- Do not put page-specific logic in global components
