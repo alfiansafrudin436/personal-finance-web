@@ -1,62 +1,65 @@
-# Zustand Store Configuration
+# Zustand Store
 
-This directory contains Zustand state management stores for the personal-finance application.
+Global client state for the app. Anything that belongs to one page lives in
+that page's `hooks.ts` instead; only state shared across routes is here.
 
-## Available Stores
+## `useAuthStore`
 
-### Auth Store (`useAuthStore`)
-Manages user authentication state:
-- `user`: Current logged-in user object
-- `isAuthenticated`: Authentication status
-- `isLoading`: Loading state
-- **Methods:**
-  - `login(user)`: Log in a user
-  - `logout()`: Log out the current user
-  - `setLoading(loading)`: Set loading state
+The signed-in user and the session flags.
 
-## Usage Examples
+| Field             | Meaning                                                |
+| ----------------- | ------------------------------------------------------ |
+| `user`            | `{ id, name, email }` of the signed-in user, or `null` |
+| `isAuthenticated` | Whether a session is active                            |
+| `isHydrated`      | Whether rehydration from localStorage has finished     |
 
-### In a Component
+| Method               | Does                                             |
+| -------------------- | ------------------------------------------------ |
+| `login(user, token)` | Stores the JWT and the profile                   |
+| `logout()`           | Clears both                                      |
+| `setUser(user)`      | Replaces the profile, e.g. after `GET /users/me` |
+
+The JWT is **not** kept in this store. It lives in localStorage under its own
+key (`src/lib/axios.ts`), because the axios request interceptor reads it on
+every request and must not depend on React state. `login` and `logout` write
+and clear it through `setStoredToken` / `clearStoredToken`.
+
+`isHydrated` exists because `persist` rehydrates asynchronously: without it a
+page cannot tell "not signed in" from "not read yet" and would redirect a
+signed-in user to the login screen on every reload.
+
+## `useUIStore`
+
+Small cross-page UI state. Currently just `editingId`, for dialogs opened from
+one page and read by another.
+
+## Usage
 
 ```tsx
-import { useAuthStore, useUIStore, useBudgetStore } from '@/src/store';
+import { useAuthStore } from '@/store';
 
-function MyComponent() {
+function Greeting() {
+  // Select one field rather than the whole store, so the component
+  // re-renders only when that field changes.
   const user = useAuthStore((state) => state.user);
-  
-  return (
-    <div>
-      <h1>Welcome, {user?.name}</h1>
-    </div>
-  );
+  return <p>Halo, {user?.name}</p>;
 }
 ```
 
-### Using with React Hook Form
+Signing in, from a page's `hooks.ts`:
 
-```tsx
-import { useAuthStore } from '@/src/store';
+```ts
+const login = useAuthStore((state) => state.login);
 
-function LoginForm() {
-  const login = useAuthStore((state) => state.login);
-  
-  const onSubmit = async (data: any) => {
-    // Login logic here
-    login({ 
-      id: '1', 
-      email: data.email, 
-      name: data.name 
-    });
-  };
-  
-  return <form onSubmit={onSubmit}>...</form>;
+const response = await authService.login({ email, password });
+if (!response.isError) {
+  login(response.data.user, response.data.token);
 }
 ```
 
 ## Persistence
 
-The auth store is persisted to localStorage using the `persist` middleware. This means authentication state survives page reloads.
-
-## TypeScript Support
-
-All stores are fully typed with TypeScript. The store definitions are in `src/store/index.ts`.
+`useAuthStore` persists `user` and `isAuthenticated` to localStorage under
+`auth-storage`. The store module is also imported during server rendering,
+where `localStorage` does not exist, so the storage getter falls back to a
+no-op implementation.
