@@ -1,30 +1,13 @@
-import './globals.css';
-import { Geist, Geist_Mono } from 'next/font/google';
 import Layout from '@/components/layout';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-export default function RootLayout({
+/**
+ * Route-group layout. The <html> and <body> tags belong to the root layout
+ * in src/app/layout.tsx, so this only wraps the private pages in the shell.
+ */
+export default function PrivateLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang='en'
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className='min-h-full flex flex-col'>
-        <Layout>{children}</Layout>
-      </body>
-    </html>
-  );
+  return <Layout>{children}</Layout>;
 }
