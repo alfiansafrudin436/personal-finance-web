@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Finance — Web
 
-## Getting Started
+Next.js frontend for the personal finance app. Pairs with the Go API in
+[`../personal-finance-service`](../personal-finance-service).
 
-First, run the development server:
+## Stack
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Radix UI ·
+React Hook Form + Yup · Zustand · Recharts · Axios
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # points at the Go API
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The API has to be running too, on the URL in
+`NEXT_PUBLIC_API_URL` (default `http://localhost:9000/api`) — see the service
+README for its setup.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script            | Does                       |
+| ----------------- | -------------------------- |
+| `pnpm dev`        | Dev server                 |
+| `pnpm build`      | Production build           |
+| `pnpm start`      | Serve the production build |
+| `pnpm lint`       | ESLint                     |
+| `pnpm type-check` | `tsc --noEmit`             |
+| `pnpm format`     | Prettier                   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Routes
 
-## Learn More
+Public — `(public)/`:
 
-To learn more about Next.js, take a look at the following resources:
+| Route              | Page                 |
+| ------------------ | -------------------- |
+| `/login`           | Sign in              |
+| `/register`        | Create an account    |
+| `/forgot-password` | Request a reset link |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Private — `(private)/`, behind the token check in `src/hooks/use-auth-guard.ts`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route           | Page                                                  |
+| --------------- | ----------------------------------------------------- |
+| `/dashboard`    | Balances, month summary, trend, recent activity       |
+| `/transactions` | Filterable, paginated list; create, edit, delete      |
+| `/accounts`     | Accounts with balances; archive instead of deleting   |
+| `/categories`   | Own categories plus the read-only global ones         |
+| `/budgets`      | Monthly budget per category with spend progress       |
+| `/reports`      | Summary, income/expense trend, per-category breakdown |
+| `/settings`     | Profile and sign out                                  |
 
-## Deploy on Vercel
+## Conventions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Read [`docs/coding-standards.md`](docs/coding-standards.md) before changing
+code. In short: UI in `page.tsx` / `index.tsx`, logic in a colocated
+`hooks.ts` returning `{ data, methods }`, API calls in `src/api/`, and `@/*`
+aliases instead of `../../`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## A few things worth knowing
+
+**Money is a string, end to end.** Amounts come from `NUMERIC(15,2)` columns
+and stay strings through the API and the service layer. They are parsed only
+at the display boundary, in `src/lib/format.ts`, so no amount is ever rounded
+by a float on its way to or from the server.
+
+**The API envelope is unwrapped in one place.** The Go API answers
+`{ status, data }` on success and `{ errors: [{ msg, path }] }` on failure.
+`src/lib/api-response.ts` knows that shape and nothing else does; every
+service returns `Response<T>` and callers branch on `isError`.
+
+**Transaction type comes from the category.** A transaction has no type column
+of its own — its category decides whether it credits the account, debits it,
+or moves money between two accounts. That is why the form only asks for a
+destination account once a transfer category is picked.
+
+**Chart colors were validated, not chosen by eye.** Income and expense use
+blue and orange rather than the conventional green and red, which fail
+deuteranopia separation badly. Both modes have their own validated steps; the
+tokens are `--chart-income` and `--chart-expense` in
+[`src/app/globals.css`](src/app/globals.css).

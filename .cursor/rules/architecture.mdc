@@ -10,7 +10,7 @@ alwaysApply: true
 ```text
 src/
 ├── app/(public)/          # login, register, forgot-password
-├── app/(private)/         # dashboard, transactions, categories, setting
+├── app/(private)/         # dashboard, transactions, accounts, categories, budgets, reports, settings
 ├── api/                   # REST service layer
 ├── components/[name]/     # index.tsx + hooks.ts
 ├── components/ui/         # Shadcn atomic UI
