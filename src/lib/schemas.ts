@@ -3,34 +3,38 @@ import * as yup from 'yup';
 export const loginSchema = yup.object({
   email: yup
     .string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email('Format email tidak valid')
+    .required('Email harus diisi'),
   password: yup
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('Password is required'),
+    .min(8, 'Password minimal 8 karakter')
+    .required('Password harus diisi'),
 });
 
 export const registerSchema = yup.object({
   name: yup
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .required('Name is required'),
+    .min(2, 'Nama minimal 2 karakter')
+    .required('Nama harus diisi'),
   email: yup
     .string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email('Format email tidak valid')
+    .required('Email harus diisi'),
   password: yup
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('Password is required'),
+    .min(8, 'Password minimal 8 karakter')
+    .required('Password harus diisi'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Konfirmasi password tidak sama')
+    .required('Konfirmasi password harus diisi'),
 });
 
 export const forgotPasswordSchema = yup.object({
   email: yup
     .string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email('Format email tidak valid')
+    .required('Email harus diisi'),
 });
 
 export type LoginFormData = yup.InferType<typeof loginSchema>;

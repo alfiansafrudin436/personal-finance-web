@@ -7,16 +7,16 @@ import { Button } from '@/components/ui/button';
 
 import { useHooks } from './hooks';
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const { data, methods } = useHooks();
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10'>
       <div className='w-full max-w-md space-y-6 rounded-2xl border border-border bg-card p-8 shadow-sm'>
         <div className='space-y-2 text-center'>
-          <h1 className='text-2xl font-semibold tracking-tight'>Masuk</h1>
+          <h1 className='text-2xl font-semibold tracking-tight'>Daftar</h1>
           <p className='text-sm text-muted-foreground'>
-            Kelola keuangan pribadimu dalam satu tempat.
+            Buat akun untuk mulai mencatat keuanganmu.
           </p>
         </div>
 
@@ -31,6 +31,15 @@ const LoginPage = () => {
 
         <form onSubmit={methods.onSubmit} className='space-y-4' noValidate>
           <FormInput
+            id='name'
+            label='Nama'
+            placeholder='Nama lengkap'
+            autoComplete='name'
+            {...data.form.register('name')}
+            error={data.errors.name?.message}
+          />
+
+          <FormInput
             id='email'
             type='email'
             label='Email'
@@ -44,33 +53,34 @@ const LoginPage = () => {
             id='password'
             type='password'
             label='Password'
-            placeholder='Masukkan password'
-            autoComplete='current-password'
+            placeholder='Minimal 8 karakter'
+            autoComplete='new-password'
             {...data.form.register('password')}
             error={data.errors.password?.message}
           />
 
-          <div className='flex justify-end'>
-            <Link
-              href='/forgot-password'
-              className='text-sm font-medium text-primary hover:underline'
-            >
-              Lupa password?
-            </Link>
-          </div>
+          <FormInput
+            id='confirmPassword'
+            type='password'
+            label='Konfirmasi password'
+            placeholder='Ulangi password'
+            autoComplete='new-password'
+            {...data.form.register('confirmPassword')}
+            error={data.errors.confirmPassword?.message}
+          />
 
           <Button type='submit' className='w-full' disabled={data.isLoading}>
-            {data.isLoading ? 'Memproses...' : 'Masuk'}
+            {data.isLoading ? 'Memproses...' : 'Daftar'}
           </Button>
         </form>
 
         <p className='text-center text-sm text-muted-foreground'>
-          Belum punya akun?{' '}
+          Sudah punya akun?{' '}
           <Link
-            href='/register'
+            href='/login'
             className='font-medium text-primary hover:underline'
           >
-            Daftar
+            Masuk
           </Link>
         </p>
       </div>
@@ -78,4 +88,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

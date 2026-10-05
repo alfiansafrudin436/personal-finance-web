@@ -1,77 +1,82 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { useForgotPassword } from './hooks';
-import { Button } from '@/components/ui/button';
+
 import { FormInput } from '@/components/form';
-import { forgotPasswordSchema } from '@/lib/schemas';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { Button } from '@/components/ui/button';
 
-export default function ForgotPasswordPage() {
-  const { data, methods } = useForgotPassword();
+import { useHooks } from './hooks';
 
-  const form = useForm({
-    resolver: yupResolver(forgotPasswordSchema),
-    mode: 'onChange',
-  });
-
-  const handleSubmit = async (data: any) => {
-    await methods.sendResetEmail(data);
-  };
+const ForgotPasswordPage = () => {
+  const { data, methods } = useHooks();
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4'>
-      <div className='w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6'>
-        {/* Header */}
-        <div className='text-center space-y-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Forgot Password</h1>
-          <p className='text-gray-600'>
-            Enter your email address and we&apos;ll send you a link to reset
-            your password
+    <div className='flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10'>
+      <div className='w-full max-w-md space-y-6 rounded-2xl border border-border bg-card p-8 shadow-sm'>
+        <div className='space-y-2 text-center'>
+          <h1 className='text-2xl font-semibold tracking-tight'>
+            Lupa Password
+          </h1>
+          <p className='text-sm text-muted-foreground'>
+            Masukkan email kamu dan kami kirimkan tautan untuk mengatur ulang
+            password.
           </p>
         </div>
 
-        {/* Error Message */}
-        {form.formState.errors.root && (
-          <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg'>
-            {form.formState.errors.root.message}
+        {data.isSent ? (
+          <div
+            role='status'
+            className='space-y-4 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success'
+          >
+            <p>
+              Jika email tersebut terdaftar, tautan pengaturan ulang sudah kami
+              kirim. Cek juga folder spam.
+            </p>
           </div>
+        ) : (
+          <>
+            {data.errors.root && (
+              <div
+                role='alert'
+                className='rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive'
+              >
+                {data.errors.root.message}
+              </div>
+            )}
+
+            <form onSubmit={methods.onSubmit} className='space-y-4' noValidate>
+              <FormInput
+                id='email'
+                type='email'
+                label='Email'
+                placeholder='kamu@contoh.com'
+                autoComplete='email'
+                {...data.form.register('email')}
+                error={data.errors.email?.message}
+              />
+
+              <Button
+                type='submit'
+                className='w-full'
+                disabled={data.isLoading}
+              >
+                {data.isLoading ? 'Mengirim...' : 'Kirim tautan'}
+              </Button>
+            </form>
+          </>
         )}
 
-        {/* Reset Password Form */}
-        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-5'>
-          {/* Email Field */}
-          <FormInput
-            id='email'
-            type='email'
-            label='Email Address'
-            placeholder='you@example.com'
-            {...form.register('email')}
-            error={form.formState.errors.email?.message}
-          />
-
-          {/* Submit Button */}
-          <Button
-            type='submit'
-            className='w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
-            disabled={methods.isLoading}
-          >
-            {methods.isLoading ? 'Sending...' : 'Send Reset Link'}
-          </Button>
-        </form>
-
-        {/* Back to Login Link */}
-        <div className='text-center'>
+        <p className='text-center text-sm text-muted-foreground'>
           <Link
             href='/login'
-            className='text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200'
+            className='font-medium text-primary hover:underline'
           >
-            ← Back to Login
+            Kembali ke halaman masuk
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );
-}
+};
+
+export default ForgotPasswordPage;

@@ -1,13 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { authService } from '@/api/auth';
-import { getStoredToken } from '@/lib/axios';
-import { LoginFormData, loginSchema } from '@/lib/schemas';
+import { RegisterFormData, registerSchema } from '@/lib/schemas';
 import { useAuthStore } from '@/store';
 
 export const useHooks = () => {
@@ -15,24 +14,18 @@ export const useHooks = () => {
   const login = useAuthStore((state) => state.login);
   const [isLoading, setIsLoading] = useState(false);
 
-  // The form lives here, not in page.tsx: two useForm calls would mean the
-  // page renders one instance while setError writes to another, so server
-  // errors would never appear.
-  const form = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
+  const form = useForm<RegisterFormData>({
+    resolver: yupResolver(registerSchema),
     mode: 'onTouched',
-    defaultValues: { email: '', password: '' },
+    defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
   });
 
-  useEffect(() => {
-    if (getStoredToken()) router.replace('/dashboard');
-  }, [router]);
-
   const submit = useCallback(
-    async (values: LoginFormData) => {
+    async (values: RegisterFormData) => {
       setIsLoading(true);
 
-      const response = await authService.login({
+      const response = await authService.register({
+        name: values.name,
         email: values.email,
         password: values.password,
       });
@@ -47,8 +40,15 @@ export const useHooks = () => {
         return;
       }
 
-      login(response.data.user, response.data.token);
-      router.replace('/dashboard');
+      // Register answers with a token when it signs the new user straight in;
+      // without one, send them to the login form instead.
+      if (response.data?.token) {
+        login(response.data.user, response.data.token);
+        router.replace('/dashboard');
+        return;
+      }
+
+      router.replace('/login');
     },
     [form, login, router],
   );
