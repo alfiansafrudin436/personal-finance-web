@@ -1,5 +1,6 @@
 import { Response } from '@/types';
 import { apiClient } from '@/lib/axios';
+import { request } from '@/lib/api-response';
 
 export interface LoginPayload {
   email: string;
@@ -16,92 +17,36 @@ export interface ForgotPasswordPayload {
   email: string;
 }
 
-export interface LoginData {
+export interface ResetPasswordPayload {
   token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  password: string;
 }
 
-export interface RegisterData {
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface LoginData {
   token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  user: AuthUser;
 }
 
 export const authService = {
-  login: async (payload: LoginPayload): Promise<Response<LoginData>> => {
-    try {
-      const response = await apiClient.post('/auth/login', payload);
-      return {
-        data: response.data,
-        isError: false,
-        code: 200,
-        errorMessage: '',
-      };
-    } catch (error: unknown) {
-      const err = error as {
-        response?: { status?: number; data?: { message?: string } };
-      };
-      return {
-        data: null as never,
-        isError: true,
-        code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
-      };
-    }
-  },
+  login: async (payload: LoginPayload): Promise<Response<LoginData>> =>
+    request<LoginData>(() => apiClient.post('/auth/login', payload)),
 
-  register: async (
-    payload: RegisterPayload,
-  ): Promise<Response<RegisterData>> => {
-    try {
-      const response = await apiClient.post('/auth/register', payload);
-      return {
-        data: response.data,
-        isError: false,
-        code: 201,
-        errorMessage: '',
-      };
-    } catch (error: unknown) {
-      const err = error as {
-        response?: { status?: number; data?: { message?: string } };
-      };
-      return {
-        data: null as never,
-        isError: true,
-        code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
-      };
-    }
-  },
+  register: async (payload: RegisterPayload): Promise<Response<LoginData>> =>
+    request<LoginData>(() => apiClient.post('/auth/register', payload)),
 
   forgotPassword: async (
     payload: ForgotPasswordPayload,
-  ): Promise<Response<{ message: string }>> => {
-    try {
-      const response = await apiClient.post('/auth/forgot-password', payload);
-      return {
-        data: response.data,
-        isError: false,
-        code: 200,
-        errorMessage: '',
-      };
-    } catch (error: unknown) {
-      const err = error as {
-        response?: { status?: number; data?: { message?: string } };
-      };
-      return {
-        data: null as never,
-        isError: true,
-        code: err.response?.status ?? 500,
-        errorMessage: err.response?.data?.message ?? 'Internal Server Error',
-      };
-    }
-  },
+  ): Promise<Response<string>> =>
+    request<string>(() => apiClient.post('/auth/forgot-password', payload)),
+
+  resetPassword: async (
+    payload: ResetPasswordPayload,
+  ): Promise<Response<string>> =>
+    request<string>(() => apiClient.post('/auth/reset-password', payload)),
 };

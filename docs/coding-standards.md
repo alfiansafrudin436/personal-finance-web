@@ -10,10 +10,13 @@
 | Stack           | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Radix UI                      |
 | Form Validation | React Hook Form + Yup                                                                        |
 | Public routes   | `(public)/login`, `(public)/register`, `(public)/forgot-password`                            |
-| Private routes  | `(private)/dashboard`, `(private)/transactions`, `(private)/categories`, `(private)/setting` |
+| Private routes  | `(private)/dashboard`, `(private)/transactions`, `(private)/accounts`, `(private)/categories`, `(private)/budgets`, `(private)/reports`, `(private)/settings` |
 | Global hooks    | `src/hooks/` → import via `@/hooks/*`                                                        |
 | UI components   | `src/components/ui/` → import via `@/ui/*` or `@/components/ui/*`                            |
 | Form components | `src/components/form/` → import via `@/form/*`                                               |
+| API layer       | `src/api/[service].ts` → one file per resource, returns `Response<T>`                        |
+| Money & dates   | `src/lib/format.ts` → the only place amounts are parsed for display                          |
+| API envelope    | `src/lib/api-response.ts` → the only place the API success/error shape is known               |
 
 ---
 

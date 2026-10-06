@@ -1,75 +1,66 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { authService, LoginPayload } from '@/api/auth';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginSchema, LoginFormData } from '@/lib/schemas';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-export interface UseLoginReturn {
-  data: null;
-  methods: {
-    register: (onSuccess?: () => void) => void;
-    isLoading: boolean;
-    login: (data: LoginFormData) => Promise<void>;
-  };
-}
+import { authService } from '@/api/auth';
+import { getStoredToken } from '@/lib/axios';
+import { LoginFormData, loginSchema } from '@/lib/schemas';
+import { useAuthStore } from '@/store';
 
-export function useLogin(): UseLoginReturn {
+export const useHooks = () => {
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
+  // The form lives here, not in page.tsx: two useForm calls would mean the
+  // page renders one instance while setError writes to another, so server
+  // errors would never appear.
+  const form = useForm<LoginFormData>({
     resolver: yupResolver(loginSchema),
-    mode: 'onChange',
+    mode: 'onTouched',
+    defaultValues: { email: '', password: '' },
   });
 
-  const login = useCallback(
-    async (data: LoginFormData) => {
+  useEffect(() => {
+    if (getStoredToken()) router.replace('/dashboard');
+  }, [router]);
+
+  const submit = useCallback(
+    async (values: LoginFormData) => {
       setIsLoading(true);
 
-      try {
-        const payload: LoginPayload = {
-          email: data.email,
-          password: data.password,
-        };
+      const response = await authService.login({
+        email: values.email,
+        password: values.password,
+      });
 
-        const response = await authService.login(payload);
+      setIsLoading(false);
 
-        if (response.isError) {
-          form.setError('root', {
-            type: 'server',
-            message: response.errorMessage,
-          });
-          return;
-        }
-
-        // Store token and redirect
-        localStorage.setItem('token', response.data.token);
-        router.push('/dashboard');
-      } catch (error) {
+      if (response.isError) {
         form.setError('root', {
-          type: 'system',
-          message: 'An unexpected error occurred. Please try again.',
+          type: 'server',
+          message: response.errorMessage,
         });
-      } finally {
-        setIsLoading(false);
+        return;
       }
+
+      login(response.data.user, response.data.token);
+      router.replace('/dashboard');
     },
-    [router],
+    [form, login, router],
   );
 
-  const register = useCallback((onSuccess?: () => void) => {
-    onSuccess?.();
-  }, []);
-
   return {
-    data: null,
-    methods: {
-      register,
+    data: {
+      form,
+      errors: form.formState.errors,
       isLoading,
-      login,
+    },
+    methods: {
+      onSubmit: form.handleSubmit(submit),
     },
   };
-}
+};

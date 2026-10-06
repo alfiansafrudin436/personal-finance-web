@@ -1,15 +1,19 @@
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  token: string;
-}
+import { AuthUser } from '@/api/auth';
 
-interface AuthState {
+export type IUser = AuthUser;
+
+export interface AuthState {
   user: IUser | null;
   isAuthenticated: boolean;
-  login: (user: IUser) => void;
+  isHydrated: boolean;
+  login: (user: IUser, token: string) => void;
   logout: () => void;
-  isLoading: boolean;
-  setLoading: (loading: boolean) => void;
+  setUser: (user: IUser) => void;
+  setHydrated: () => void;
+}
+
+export interface UIState {
+  /** Id of the record an edit dialog is currently open for. */
+  editingId: string | null;
+  setEditingId: (id: string | null) => void;
 }

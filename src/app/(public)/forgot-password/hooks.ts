@@ -1,70 +1,56 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  forgotPasswordService,
-  ForgotPasswordPayload,
-} from '@/api/forgot-password';
-import { useRouter } from 'next/navigation';
-import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/schemas';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-export interface UseForgotPasswordReturn {
-  data: null;
-  methods: {
-    isLoading: boolean;
-    sendResetEmail: (data: ForgotPasswordFormData) => Promise<void>;
-  };
-}
+import { authService } from '@/api/auth';
+import { ForgotPasswordFormData, forgotPasswordSchema } from '@/lib/schemas';
 
-export function useForgotPassword(): UseForgotPasswordReturn {
-  const router = useRouter();
+export const useHooks = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
-  const form = useForm({
+  const form = useForm<ForgotPasswordFormData>({
     resolver: yupResolver(forgotPasswordSchema),
-    mode: 'onChange',
+    mode: 'onTouched',
+    defaultValues: { email: '' },
   });
 
-  const sendResetEmail = useCallback(
-    async (data: ForgotPasswordFormData) => {
+  const submit = useCallback(
+    async (values: ForgotPasswordFormData) => {
       setIsLoading(true);
 
-      try {
-        const payload: ForgotPasswordPayload = {
-          email: data.email,
-        };
+      const response = await authService.forgotPassword({
+        email: values.email,
+      });
 
-        const response = await forgotPasswordService.sendResetEmail(payload);
+      setIsLoading(false);
 
-        if (response.isError) {
-          form.setError('root', {
-            type: 'server',
-            message: response.errorMessage,
-          });
-          return;
-        }
-
-        // Success - redirect to login
-        router.push('/login');
-      } catch (error) {
+      if (response.isError) {
         form.setError('root', {
-          type: 'system',
-          message: 'An unexpected error occurred. Please try again.',
+          type: 'server',
+          message: response.errorMessage,
         });
-      } finally {
-        setIsLoading(false);
+        return;
       }
+
+      // Confirmation is deliberately not "we found that email": saying so
+      // would let anyone test which addresses have an account.
+      setIsSent(true);
     },
-    [router],
+    [form],
   );
 
   return {
-    data: null,
-    methods: {
+    data: {
+      form,
+      errors: form.formState.errors,
       isLoading,
-      sendResetEmail,
+      isSent,
+    },
+    methods: {
+      onSubmit: form.handleSubmit(submit),
     },
   };
-}
+};
