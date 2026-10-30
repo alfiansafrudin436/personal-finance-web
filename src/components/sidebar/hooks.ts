@@ -7,6 +7,7 @@ import {
   IconChartPie,
   IconLayoutDashboard,
   IconSettings,
+  IconSparkles,
   IconTags,
   IconTargetArrow,
   IconWallet,
@@ -21,6 +22,7 @@ export const sidebarItems = [
   { title: 'Kategori', url: '/categories', icon: IconTags },
   { title: 'Anggaran', url: '/budgets', icon: IconTargetArrow },
   { title: 'Laporan', url: '/reports', icon: IconChartPie },
+  { title: 'Asisten AI', url: '/assistant', icon: IconSparkles },
   { title: 'Pengaturan', url: '/settings', icon: IconSettings },
 ];
 
