@@ -10,7 +10,7 @@
 | Stack           | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Radix UI                      |
 | Form Validation | React Hook Form + Yup                                                                        |
 | Public routes   | `(public)/login`, `(public)/register`, `(public)/forgot-password`                            |
-| Private routes  | `(private)/dashboard`, `(private)/transactions`, `(private)/accounts`, `(private)/categories`, `(private)/budgets`, `(private)/reports`, `(private)/settings` |
+| Private routes  | `(private)/dashboard`, `(private)/transactions`, `(private)/accounts`, `(private)/categories`, `(private)/budgets`, `(private)/reports`, `(private)/assistant`, `(private)/settings` |
 | Global hooks    | `src/hooks/` → import via `@/hooks/*`                                                        |
 | UI components   | `src/components/ui/` → import via `@/ui/*` or `@/components/ui/*`                            |
 | Form components | `src/components/form/` → import via `@/form/*`                                               |

@@ -49,6 +49,7 @@ Private — `(private)/`, behind the token check in `src/hooks/use-auth-guard.ts
 | `/categories`   | Own categories plus the read-only global ones         |
 | `/budgets`      | Monthly budget per category with spend progress       |
 | `/reports`      | Summary, income/expense trend, per-category breakdown |
+| `/assistant`    | AI assistant that answers questions about your data   |
 | `/settings`     | Profile and sign out                                  |
 
 ## Conventions
@@ -80,3 +81,11 @@ blue and orange rather than the conventional green and red, which fail
 deuteranopia separation badly. Both modes have their own validated steps; the
 tokens are `--chart-income` and `--chart-expense` in
 [`src/app/globals.css`](src/app/globals.css).
+
+**The AI assistant only reads.** `/assistant` posts the conversation to the
+route handler in `src/app/api/chat/route.ts`, which holds `ANTHROPIC_API_KEY`
+and runs Claude with the tools in `src/lib/assistant/tools.ts`. The browser
+forwards the user's JWT; the route checks it against `GET /users/me` and the
+tools call the Go API with it, so the assistant only sees that user's data.
+Every tool is a `GET` — it can explain balances, spending and budgets, but
+recording or changing anything still happens on the regular pages.

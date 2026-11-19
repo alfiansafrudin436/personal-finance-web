@@ -38,35 +38,50 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = getStoredToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+/**
+ * Same-origin client for this app's own route handlers (src/app/api), such as
+ * the AI assistant. Its timeout is longer because an assistant answer can take
+ * several model and tool round-trips.
+ */
+const appClient: AxiosInstance = axios.create({
+  baseURL: '/api',
+  timeout: 90000,
+  headers: {
+    'Content-Type': 'application/json',
   },
-  (error) => Promise.reject(error),
-);
+});
 
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // An expired or invalid token leaves the app unusable, so drop it and
-    // send the user back to sign in. The login call itself is excluded: a
-    // wrong password also answers 401 and must surface as a form error.
-    const isAuthRequest = error.config?.url?.includes('/auth/');
-    if (error.response?.status === 401 && !isAuthRequest) {
-      clearStoredToken();
-      if (
-        typeof window !== 'undefined' &&
-        !window.location.pathname.startsWith('/login')
-      ) {
-        window.location.href = '/login';
+for (const client of [apiClient, appClient]) {
+  client.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const token = getStoredToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    }
-    return Promise.reject(error);
-  },
-);
+      return config;
+    },
+    (error) => Promise.reject(error),
+  );
 
-export { apiClient };
+  client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      // An expired or invalid token leaves the app unusable, so drop it and
+      // send the user back to sign in. The login call itself is excluded: a
+      // wrong password also answers 401 and must surface as a form error.
+      const isAuthRequest = error.config?.url?.includes('/auth/');
+      if (error.response?.status === 401 && !isAuthRequest) {
+        clearStoredToken();
+        if (
+          typeof window !== 'undefined' &&
+          !window.location.pathname.startsWith('/login')
+        ) {
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
+    },
+  );
+}
+
+export { apiClient, appClient };
